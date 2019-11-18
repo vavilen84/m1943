@@ -1,0 +1,90 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php /* @var $this Bolt_Boltpay_Block_Checkout_Boltpay */?>
+<?php
+$quote = Mage::getSingleton('checkout/session')->getQuote();
+$publishableKey = $this->boltHelper()->getPublishableKeyOnePage();
+
+if(($quote->getPayment()->getMethodInstance()->getCode() == 'boltpay') && $publishableKey): ?>
+
+    <?php
+    $additionalClasses = $this->boltHelper()->getAdditionalButtonClasses();
+    $buttonColor = $this->boltHelper()->getBoltPrimaryColor();
+    ?>
+    <div class="bolt-checkout-button <?php echo $additionalClasses; ?>"
+        <?php if($buttonColor): ?>
+            style="--bolt-primary-action-color:<?php echo $buttonColor?>"
+        <?php endif;?>
+    ></div>
+    <script type="text/javascript">
+
+        (function() {
+
+            var jsonpRequest = function(parent, element, attributes, params, callback_fn) {
+
+                if (params) {
+
+                    var ts  = new Date().getTime();
+                    params.push('cachebust' + '=' + encodeURIComponent(ts));
+
+                    if (callback_fn) params.push('callback' + '=' + encodeURIComponent(callback_fn));
+
+                    params = params.join('&');
+                    attributes.src += '?' + params;
+                }
+
+                var el = document.createElement(element);
+
+                if (attributes) {
+                    for (var attr in attributes) {
+                        el.setAttribute(attr, attributes[attr]);
+                    }
+                }
+
+                document.getElementsByTagName(parent)[0].appendChild(el);
+            };
+
+            var loadConnectJS = function(key) {
+                jsonpRequest('body', 'script', {"src": "<?= $this->getJsUrl(); ?>", "id":"bolt-connect", "type":"text/javascript", "data-shopping-cart-id":"Magento", "data-publishable-key":key});
+            };
+
+            loadConnectJS('<?=$publishableKey;?>');
+
+            var retries = 50;
+
+            var interval = setInterval(
+                function() {
+
+                    if (--retries <= 0) clearInterval(interval);
+
+                    if (typeof BoltConnect !== "undefined") {
+                        clearInterval(interval);
+                        <?=$this->getCartDataJs('one-page'); ?>
+                    }
+                }, 200);
+
+        })();
+        <?=$this->getAdditionalJs();?>
+    </script>
+<?php else: ?>
+    <?= $this->getChildHtml('button_original') ?>
+<?php endif; ?>
+<style>
+    <?=$this->getSelectorsCSS();?>
+    <?=$this->getAdditionalCSS();?>
+</style>

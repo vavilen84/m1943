@@ -1,0 +1,1 @@
+a:2:{s:16:"shipping_options";a:2:{i:0;a:4:{s:7:"service";s:17:"Flat Rate - Fixed";s:9:"reference";s:17:"flatrate_flatrate";s:4:"cost";d:500;s:10:"tax_amount";d:0;}i:1;a:4:{s:7:"service";s:20:"Free Shipping - Free";s:9:"reference";s:25:"freeshipping_freeshipping";s:4:"cost";d:0;s:10:"tax_amount";d:0;}}s:10:"tax_result";a:1:{s:6:"amount";i:0;}}

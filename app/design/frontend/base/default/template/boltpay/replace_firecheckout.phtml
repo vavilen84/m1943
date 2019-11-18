@@ -1,0 +1,171 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/********************************************************************
+ * Bolt replace button JavaScript / CSS that's added to the firecheckout cart page
+ ********************************************************************/
+/** @var Bolt_Boltpay_Block_Checkout_Boltpay $this */
+if(!$this->boltHelper()->canUseBolt($this->getQuote(), false) || Mage::getStoreConfig('payment/boltpay/hide_on_checkout') ) return;
+
+?>
+<script>
+
+    var bolt_buttons = [];
+    var place_order_buttons = [];
+
+    var initBoltButtons = function() {
+        <?=$this->getCartDataJs(Bolt_Boltpay_Block_Checkout_Boltpay::CHECKOUT_TYPE_FIRECHECKOUT); ?>
+    };
+
+    var initializeBolt = function(){
+
+        var addBoltButtons = function() {
+            place_order_buttons = document.querySelectorAll('<?=Mage::getStoreConfig('payment/boltpay/selectors');?>');
+
+            for (var i = 0; i < place_order_buttons.length; i++) {
+                place_order_button = place_order_buttons[i];
+                var bolt_button =  document.createElement("div");
+                bolt_button.setAttribute("class", "bolt-checkout-button <?=$this->getCssSuffix(); ?> <?=$this->boltHelper()->getAdditionalButtonClasses() ?>");
+
+                <?php $buttonColor = $this->boltHelper()->getBoltPrimaryColor();?>
+                <?php if($buttonColor):?>
+                bolt_button.setAttribute("style", "--bolt-primary-action-color:<?php echo $buttonColor?>");
+                <?php endif; ?>
+
+                bolt_button.style.display = "none";
+
+                place_order_button.parentNode.insertBefore(bolt_button, place_order_button);
+                bolt_buttons.push(bolt_button);
+            }
+        };
+
+        // Render Bolt button.
+        addBoltButtons();
+        initBoltButtons();
+
+        /**
+         * Click event to payment method radio buttons that toggle
+         * display of the bolt button
+         */
+        var toggleBoltButton = function () {
+            if (this.id == "p_method_boltpay") {
+                for (var i = 0; i < bolt_buttons.length; i++)
+                {
+                    bolt_buttons[i].style.display = "";
+                }
+                for (var i = 0; i < place_order_buttons.length; i++)
+                {
+                    place_order_buttons[i].style.display="none";
+                }
+            } else {
+                for (var i = 0; i < bolt_buttons.length; i++)
+                {
+                    bolt_buttons[i].style.display = "none";
+                }
+                for (var i = 0; i < place_order_buttons.length; i++)
+                {
+                    place_order_buttons[i].style.display="";
+                }
+            }
+        };
+
+
+        var selected_radio = null;
+
+        /**
+         * Attaches click event to all radio buttons
+         *
+         * @param   An option list passed in by an observer if this function is called in that context
+         *          This can be omitted.
+         */
+        var attachClickEvents = function(mutationList) {
+
+            var payment_radios = document.querySelectorAll('[name="payment[method]"]');
+            for (var i = 0, length = payment_radios.length; i < length; i++) {
+
+                var payment_radio = payment_radios[i];
+
+                payment_radio.addEventListener('click', toggleBoltButton);
+
+                <?php if ($this->isBoltOnlyPayment()): ?>
+                if (payment_radio.id != "p_method_boltpay") {
+                    payment_radio.parentNode.style.display = "none";
+                    payment_radio.checked = false;
+                }
+                <?php endif; ?>
+
+                if (payment_radio.checked) { selected_radio = payment_radio; }
+            }
+
+        };
+
+        var autoSelectShipping = function () {
+
+            var shipping_selected = false;
+            var shipping_methods  = document.querySelectorAll('input[name=shipping_method]');
+
+            for (var i = 0; i < shipping_methods.length; i++) {
+                var shipping_method = shipping_methods[i];
+                if (shipping_method.checked) {
+                    shipping_selected = true;
+                    shipping_method.click();
+                }
+            }
+
+            if (!shipping_selected && shipping_methods.length)  document.querySelectorAll('input[name=shipping_method]')[0].click();
+        };
+
+        autoSelectShipping();
+        attachClickEvents();
+
+        var autoSelectPaymentMethod = function () {
+            var bolt_radio = document.querySelector('#p_method_boltpay');
+
+            if (selected_radio) {
+                selected_radio.click();
+            } else if (bolt_radio) {
+                bolt_radio.click();
+            }
+        };
+
+        autoSelectPaymentMethod();
+
+        //////////////////////////////////////////////////////////////////////
+        // Watch for changes in the payment methods to re-attach click events
+        //////////////////////////////////////////////////////////////////////
+        var paymentMethodsContainer = document.getElementById('checkout-payment-method-load');
+        var paymentMethodObserver = new MutationObserver(attachClickEvents);
+        paymentMethodObserver.observe(paymentMethodsContainer, { childList: true });
+        //////////////////////////////////////////////////////////////////////
+
+    };
+
+    if (window.addEventListener) {
+        window.addEventListener("load", initializeBolt, false);
+    } else if (window.attachEvent) {
+        window.attachEvent("onload", initializeBolt);
+    } else {
+        window.onload = onloadCallback;
+    }
+
+    <?=$this->getAdditionalJs();?>
+</script>
+
+<style>
+    <?=$this->getSelectorsCSS();?>
+    <?=$this->getAdditionalCSS();?>
+</style>

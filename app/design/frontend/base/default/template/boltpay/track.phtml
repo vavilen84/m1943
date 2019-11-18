@@ -1,0 +1,37 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php /* @var $this Bolt_Boltpay_Block_Checkout_Boltpay */ ?>
+<?php
+$versionElm =  Mage::getConfig()->getModuleConfig("Bolt_Boltpay")->xpath("version");
+$version = (string)$versionElm[0];
+$routeName = $this->getRequest()->getRouteName();
+$controllerName = $this->getRequest()->getControllerName();
+/* TODO: extend key selection for mini-cart if necessary */
+?>
+<?php if($this->isBoltActive()): ?>
+    <script
+            id="bolt-track"
+            type="text/javascript"
+            src="<?= $this->getTrackJsUrl(); ?>"
+            data-publishable-key="<?=$this->getPublishableKey((Mage::app()->getRequest()->getControllerName() === 'cart'
+                || ($routeName === 'catalog' && $controllerName === 'product'))
+                ? 'multi-page' : 'one-page'); ?>">
+    </script>
+    <script>console.log("Bolt M1 Version: <?=$version?>");</script>
+<?php endif; ?>
+

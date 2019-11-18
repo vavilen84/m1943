@@ -1,0 +1,207 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+
+/********************************************************************
+ * Bolt replace button JavaScript / CSS that's added to the shopping cart page
+ ********************************************************************/
+?>
+<?php /* @var $this Bolt_Boltpay_Block_Checkout_Boltpay */?>
+<?php
+
+if(!$this->isAllowedReplaceScriptOnCurrentPage()
+   || !$this->canUseBolt()
+   || !$this->getPublishableKeyForRoute()
+) {
+    return;
+}
+
+$additionalClasses = $this->boltHelper()->getAdditionalButtonClasses();
+?>
+<script>
+
+    var initBoltButtons = function(){
+
+        /****************************************************************************************************
+         * Finds and replaces specified buttons with Bolt checkout buttons. Runs internal function
+         * on every 0.5 seconds up to 20 times. If no button was found for 10 seconds it clears the interlal
+         ****************************************************************************************************/
+        var replaceCheckout = function() {
+
+            var replaceRetries  = 20,
+                replaceInterval = 500;
+
+            // replaceable button selectors and types of Bolt buttons to replace them with
+            var selectors = {
+                ".block-cart .block-content .actions button.button" : "bolt-checkout-button bolt-multi-step-checkout forward-to-cart <?=$additionalClasses; ?>"
+            };
+
+            var config_selectors = JSON.parse('<?=$this->getConfigSelectors();?>');
+
+            for (var i = 0, length = config_selectors.length; i < length; i++ ) {
+                var selector = config_selectors[i];
+                selectors[selector] = "bolt-checkout-button bolt-multi-step-checkout " + selector.replace(/^[.#]*/, "").replace(/[.#]*$/, "") + "-<?=$this->getCssSuffix(); ?> <?=$additionalClasses; ?>";
+            }
+
+            var tryInterval = setInterval(
+
+                function() {
+
+                    replaceRetries -= 1;
+                    if (replaceRetries === 0) clearInterval(tryInterval);
+
+                    var found_elements = false;
+
+                    /*************************************************************
+                     * Try to find all replaceable buttons in every iteration.
+                     * Hide every button found and insert a Bolt button next to it.
+                     *************************************************************/
+                    for (var selector in selectors) {
+
+                        if (selectors.hasOwnProperty(selector)) {
+
+                            var elements = document.querySelectorAll(selector),
+                                elmLength = elements.length;
+
+                            for (var i = 0; i < elmLength; i++ ) {
+
+                                var element = elements[i];
+                                found_elements = true;
+                                /**
+                                 * Escape double replace buttons
+                                **/
+                                var wasReplaced = element.getAttribute("data-was-replaced");
+                                if (wasReplaced !== "true") {
+                                    element.style.display = "none";
+                                    /**
+                                     * Mark button as replaced
+                                     **/
+                                    element.setAttribute("data-was-replaced", "true");
+                                    var bolt_button =  document.createElement("div");
+                                    bolt_button.setAttribute("class",selectors[selector]);
+    
+                                    <?php $buttonColor = $this->boltHelper()->getBoltPrimaryColor();?>
+                                    <?php if($buttonColor):?>
+                                        bolt_button.setAttribute("style", "--bolt-primary-action-color:<?php echo $buttonColor?>");
+                                    <?php endif; ?>
+    
+                                    element.parentNode.insertBefore(bolt_button, element);
+    
+                                    if (element.parentNode.style.display === "") {
+                                        element.parentNode.style.display = "block";
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    if (! found_elements) return;
+
+                    <?php if ($this->isBoltOnlyPayment()): ?>
+
+                    var lis = document.querySelectorAll('ul.checkout-types li');
+
+                    for (var i = 0, length = lis.length; i < length; i++) {
+                        var li = lis[i];
+
+                        if (li.style.display != "block")  li.style.display = "none";
+                    }
+
+                    var proceed_link = document.querySelectorAll('div.checkout_proceed_link a.button_link.checkout-proceed')[0];
+
+                    if (proceed_link) {
+                        proceed_link.text = proceed_link.text = "<?=$this->__('Proceed to Checkout');?>";
+                    }
+
+                    <?php endif; ?>
+
+                    // do nut run the replacement routine again
+                    clearInterval(tryInterval);
+
+                    // On every 50 ms check if the Bolt connect.js javascript is inserted
+                    // by checking the BoltCheckout object existence. Clear the interval when
+                    // BoltCheckout is found. On products page the Bolt checkout button
+                    // is set up to forward to the cart page. On cart page BoltCheckout.configure is executed.
+                    var processInterval = setInterval(
+                        function() {
+
+                            if (typeof BoltCheckout !== "undefined") {
+
+                                clearInterval(processInterval);
+
+                                // selector that indicates that forward to the cart
+                                // functionality should be implemented, products page.
+                                var forward_button = document.querySelectorAll('.forward-to-cart')[0];
+
+                                if (forward_button) {
+
+                                    var styleEl = document.createElement('style'), styleSheet;
+                                    document.head.appendChild(styleEl);
+                                    styleSheet = styleEl.sheet;
+                                    styleSheet.insertRule("#bolt-modal-background { display:none; }", 0);
+
+                                    forward_button.onclick = function(event){
+                                        event.preventDefault();
+                                        event.stopPropagation();
+                                        location.href = '<?=$this->getCartURL();?>';
+                                    };
+                                } else {
+                                    /*****************************************************************
+                                     * Creating the order at Bolt end, if applicable (cart not empty).
+                                     * Generating BoltCheckout code.
+                                     *****************************************************************/
+                                    <?=$this->getCartDataJs('multi-page'); ?>
+                                }
+                            }
+
+                        }, 50
+                    );
+
+                }, replaceInterval);
+        };
+
+        replaceCheckout();
+
+        if (typeof Minicart != "undefined") {
+            /*************************************************************
+             * Minicart HTML is regenerated via ajax after document load.
+             * On each ajax call, and overlay is added and then removed
+             * after the rendering of the new HTML is complete.  At this
+             * point we want to re-render the Bolt buttons, which will
+             * have been removed in the regeneration
+             *************************************************************/
+            Minicart.prototype.hideOverlay = function(){
+                initBoltButtons();
+                $j(this.selectors.overlay).removeClass('loading');
+            };
+        }
+    };
+
+    if (document.addEventListener) {
+        document.addEventListener("DOMContentLoaded", initBoltButtons);
+    } else if (window.attachEvent) {
+        window.attachEvent("onload", initBoltButtons);
+    } else {
+        window.onload = initBoltButtons;
+    }
+
+    <?=$this->getAdditionalJs();?>
+</script>
+
+<style>
+    <?=$this->getSelectorsCSS();?>
+    <?=$this->getAdditionalCSS();?>
+</style>

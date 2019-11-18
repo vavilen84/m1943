@@ -1,0 +1,300 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+-->
+<config>
+
+  <modules>
+    <Bolt_Boltpay>
+      <version>2.0.1</version> <!-- version number should be incremented appropriately  -->
+    </Bolt_Boltpay>
+  </modules>
+
+  <global>
+    <models>
+      <boltpay>
+        <class>Bolt_Boltpay_Model</class>
+      </boltpay>
+      <salesrule>
+        <rewrite>
+          <validator>Bolt_Boltpay_Model_Validator</validator>
+        </rewrite>
+      </salesrule>
+    </models>
+
+    <blocks>
+      <boltpay>
+        <class>Bolt_Boltpay_Block</class>
+      </boltpay>
+
+      <checkout>
+        <rewrite>
+          <onepage>Bolt_Boltpay_Block_Rewrite_Onepage</onepage>
+        </rewrite>
+      </checkout>
+    </blocks>
+
+    <helpers>
+      <boltpay>
+        <class>Bolt_Boltpay_Helper</class>
+      </boltpay>
+    </helpers>
+
+    <resources>
+      <bolt_boltpay_setup>
+        <setup>
+          <module>Bolt_Boltpay</module>
+          <class>Mage_Eav_Model_Entity_Setup</class>
+        </setup>
+
+        <connection>
+          <use>core_setup</use>
+        </connection>
+      </bolt_boltpay_setup>
+    </resources>
+
+    <events>
+      <controller_front_init_before>
+          <observers>
+              <bolt_boltpay_init_benchmarking>
+                  <class>Bolt_Boltpay_Model_Observer</class>
+                  <method>initializeBenchmarkProfiler</method>
+              </bolt_boltpay_init_benchmarking>
+          </observers>
+      </controller_front_init_before>
+      <controller_front_send_response_after>
+          <observers>
+              <bolt_boltpay_flush_benchmark_logs>
+                  <class>Bolt_Boltpay_Model_Observer</class>
+                  <method>logFullBenchmarkProfile</method>
+              </bolt_boltpay_flush_benchmark_logs>
+          </observers>
+      </controller_front_send_response_after>
+      <checkout_onepage_controller_success_action> <!-- Call after order has been saved and forwarded to success page -->
+        <observers>
+          <bolt_boltpay_clear_shopping_cart>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>clearShoppingCartExceptPPCOrder</method>
+            <depends>
+              <ZZZZZ_Bolt />  <!--  psuedo module to place execution at the back of event queue -->
+            </depends>
+          </bolt_boltpay_clear_shopping_cart>
+        </observers>
+      </checkout_onepage_controller_success_action>
+      <sales_model_service_quote_submit_before>
+        <observers>
+          <bolt_boltpay_validate_order_before_commit>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>validateBeforeOrderCommit</method>
+          </bolt_boltpay_validate_order_before_commit>
+        </observers>
+      </sales_model_service_quote_submit_before>
+      <sales_order_payment_capture>
+        <observers>
+          <boltpay_payment_capture_add_message>
+            <type>singleton</type>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>addMessageWhenCapture</method>
+          </boltpay_payment_capture_add_message>
+        </observers>
+      </sales_order_payment_capture>
+      <sales_order_grid_collection_load_before>
+        <observers>
+          <bolt_boltpay_filter_preauth_orders>
+            <type>singleton</type>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>hidePreAuthOrders</method>
+          </bolt_boltpay_filter_preauth_orders>
+        </observers>
+      </sales_order_grid_collection_load_before>
+      <sales_order_save_before>
+        <observers>
+          <bolt_boltpay_safeguard_preauth_status>
+            <type>singleton</type>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>safeguardPreAuthStatus</method>
+          </bolt_boltpay_safeguard_preauth_status>
+        </observers>
+      </sales_order_save_before>
+    </events>
+
+    <sales>
+      <order>
+        <statuses>
+          <deferred translate="label">
+            <label>Deferred</label>
+          </deferred>
+        </statuses>
+        <states>
+          <deferred translate="label">
+            <label>Deferred</label>
+            <statuses>
+              <deferred default="1"/>
+            </statuses>
+          </deferred>
+        </states>
+      </order>
+      <!-- Adds total sorting refinement due to the changes in uasort between PHP5 and PHP7 -->
+      <quote>
+        <totals>
+          <nominal>
+            <class>sales/quote_address_total_nominal</class>
+            <before>subtotal</before>
+          </nominal>
+          <subtotal>
+            <class>sales/quote_address_total_subtotal</class>
+            <after>nominal</after>
+            <before>grand_total</before>
+          </subtotal>
+          <shipping>
+            <class>sales/quote_address_total_shipping</class>
+            <after>subtotal,freeshipping,tax_subtotal,msrp</after>
+            <before>grand_total</before>
+          </shipping>
+          <grand_total>
+            <class>sales/quote_address_total_grand</class>
+            <after>subtotal</after>
+          </grand_total>
+          <msrp>
+            <class>sales/quote_address_total_msrp</class>
+            <before>grand_total</before>
+          </msrp>
+        </totals>
+      </quote>
+    </sales>
+  </global>
+
+  <admin>
+    <routers>
+      <adminhtml>
+        <args>
+          <modules>
+            <Bolt_Boltpay before="Mage_Adminhtml">Bolt_Boltpay_Adminhtml</Bolt_Boltpay>
+          </modules>
+        </args>
+      </adminhtml>
+    </routers>
+  </admin>
+
+  <adminhtml>
+    <layout>
+      <updates>
+        <boltpay>
+          <file>boltpay.xml</file>
+        </boltpay>
+      </updates>
+    </layout>
+  </adminhtml>
+
+  <frontend>
+    <routers>
+      <boltpay>
+        <use>standard</use>
+        <args>
+          <module>Bolt_Boltpay</module>
+          <frontName>boltpay</frontName>
+        </args>
+      </boltpay>
+    </routers>
+    <translate>
+      <modules>
+        <Bolt_Boltpay>
+          <files>
+            <default>Bolt_Boltpay.csv</default>
+          </files>
+        </Bolt_Boltpay>
+      </modules>
+    </translate>
+    <layout>
+      <updates>
+        <boltpay>
+          <file>boltpay.xml</file>
+        </boltpay>
+      </updates>
+    </layout>
+    <events>
+      <controller_action_predispatch>
+        <observers>
+          <bolt_boltpay_check_if_order_canceled>
+            <type>singleton</type>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>clearCartCacheOnOrderCanceled</method>
+          </bolt_boltpay_check_if_order_canceled>
+          <bolt_boltpay_set_success_session_data>
+            <type>singleton</type>
+            <class>Bolt_Boltpay_Model_Observer</class>
+            <method>setSuccessSessionData</method>
+          </bolt_boltpay_set_success_session_data>
+        </observers>
+      </controller_action_predispatch>
+    </events>
+  </frontend>
+
+  <default>
+    <payment>
+      <boltpay>
+        <active>1</active>
+        <hide_on_checkout>0</hide_on_checkout>
+        <model>boltpay/payment</model>
+        <button_classes>with-cards</button_classes>
+        <title>Credit card</title>
+        <order_status>processing</order_status>
+        <payment_action>authorize</payment_action>
+        <currency>USD</currency>
+        <enable_merchant_scoped_account>0</enable_merchant_scoped_account>
+        <selectors><![CDATA[.btn-proceed-checkout, .minicart-actions .checkout-button, body.firecheckout-index-index .button.btn-checkout]]></selectors>
+        <selector_styles>
+          .btn-proceed-checkout {
+            .bolt-checkout-button.with-cards {
+              float: right;
+            }
+          }
+        </selector_styles>
+        <enable_product_page_checkout>0</enable_product_page_checkout>
+        <product_page_checkout_selector>.btn-cart</product_page_checkout_selector>
+        <additional_css>
+          #checkout-review-submit .bolt-checkout-button {
+            clear:both;
+            float:right;
+          }
+          .col-right.sidebar .block.block-cart .block-content .actions .bolt-checkout-button-button {
+            min-width: max-content!important;
+          }
+        </additional_css>
+        <successpage>checkout/onepage/success</successpage>
+        <allow_po_box>1</allow_po_box>
+        <skip_payment>0</skip_payment>
+        <skip_confirm>1</skip_confirm>
+        <use_javascript_in_admin>0</use_javascript_in_admin>
+        <add_button_everywhere>0</add_button_everywhere>
+        <sort_order>0</sort_order>
+      </boltpay>
+    </payment>
+  </default>
+  <crontab>
+    <jobs>
+      <immutable_quote_cleanup>
+        <schedule>
+          <cron_expr>0 3 * * *</cron_expr>
+        </schedule>
+        <run>
+          <model>boltpay/cron::cleanupQuotes</model>
+        </run>
+      </immutable_quote_cleanup>
+    </jobs>
+  </crontab>
+</config>

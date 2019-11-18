@@ -1,0 +1,27 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<div
+  class="form-list"
+  id="payment_form_<?= $this->getMethodCode() ?>"
+  style="display: none;">
+  <input type="hidden" id="p_method_boltpay_reference" name="payment[reference]">
+  <input type="hidden" id="p_method_boltpay_transaction_status" name="payment[transaction_status]">
+</div>
+<div>
+  <?= $this->getMethod()->getConfigData('message') ?>
+</div>

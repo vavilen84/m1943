@@ -1,0 +1,59 @@
+<?php
+/**
+ * Bolt magento plugin
+ *
+ * NOTICE OF LICENSE
+ *
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.txt.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/osl-3.0.php
+ *
+ * @category   Bolt
+ * @package    Bolt_Boltpay
+ * @copyright  Copyright (c) 2019 Bolt Financial, Inc (https://www.bolt.com)
+ * @license    http://opensource.org/licenses/osl-3.0.php  Open Software License (OSL 3.0)
+ */
+?>
+<?php /* @var $this Bolt_Boltpay_Block_Checkout_Boltpay */?>
+<?php
+$quote = Mage::getSingleton('checkout/session')->getQuote();
+$additionalClasses = $this->boltHelper()->getAdditionalButtonClasses();
+$buttonColor = $this->boltHelper()->getBoltPrimaryColor();
+$_code = $this->getMethodCode();
+$fieldName = $this->boltHelper()->__('Process Order Through Bolt');
+?>
+<ul id="payment_form_<?php echo $_code ?>" style="display:none">
+    <li>
+        <div class="input-box">
+            <label for="<?php echo $_code ?>_payment_button"><?php echo $fieldName ?> <span class="required">*</span></label><br/>
+            <div class="bolt-checkout-button <?php echo $additionalClasses; ?>"
+                <?php if($buttonColor): ?>
+                    style="--bolt-primary-action-color:<?php echo $buttonColor?>"
+                <?php endif;?>
+            ></div>
+            <input type="hidden" title="<?php echo Mage::helper('core')->quoteEscape($fieldName) ?>" class="required-entry" id="<?php echo $_code ?>_payment_button" name="payment[bolt_reference]" value="<?php echo $this->getInfoData('bolt_reference') ?>"/>
+        </div>
+    </li>
+</ul>
+
+<script type="text/javascript">
+    
+    (function() {
+        //////////////////////////////////////////////////
+        //  BoltCheckout JS is loaded after connect.js
+        //////////////////////////////////////////////////
+        var retries = 50;
+        var interval = setInterval(
+            function() {
+
+                if (--retries <= 0) clearInterval(interval);
+
+                if (typeof BoltCheckout !== "undefined") {
+                    clearInterval(interval);
+                    <?=$this->boltHelper()->getCartDataJs('admin'); ?>
+                }
+            }, 200);
+
+    })();
+</script>
