@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<layout version="0.1.0">
+    <catalog_product_view>
+        <reference name="product.info">
+            <block type="postaccountcreate/data" name="postaccountcreate" before="-"/>
+        </reference>
+    </catalog_product_view>
+    <helloworld_index_index>
+        <reference name="content">
+            <block type="postaccountcreate/data" name="hello.world.content" template="vavilen84_postaccountcreate/content.phtml" />
+        </reference>
+    </helloworld_index_index>
+</layout>

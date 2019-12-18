@@ -1,9 +1,9 @@
 <?xml version="1.0" ?>
 <config>
     <modules>
-        <IGN_Siteblocks>
+        <Vavilen84_PostAccountCreate>
             <active>true</active>
             <codePool>local</codePool>
-        </IGN_Siteblocks>
+        </Vavilen84_PostAccountCreate>
     </modules>
 </config>

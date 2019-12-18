@@ -1,0 +1,33 @@
+<?xml version="1.0" ?>
+<config>
+    <modules>
+        <vavilen84_postaccountcreate>
+            <version>0.1.0</version>
+        </vavilen84_postaccountcreate>
+    </modules>
+    <global>
+        <blocks>
+            <postaccountcreate>
+                <class>Vavilen84_PostAccountCreate_Block</class>
+            </postaccountcreate>
+        </blocks>
+    </global>
+    <frontend>
+        <routers>
+            <helloworld>
+                <use>standard</use>
+                <args>
+                    <module>Vavilen84_PostAccountCreate</module>
+                    <frontName>helloworld</frontName>
+                </args>
+            </helloworld>
+        </routers>
+        <layout>
+            <updates>
+                <vavilen84_postaccountcreate>
+                    <file>vavilen84_postaccountcreate.xml</file>
+                </vavilen84_postaccountcreate>
+            </updates>
+        </layout>
+    </frontend>
+</config>
