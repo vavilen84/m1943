@@ -13,15 +13,6 @@
         </blocks>
     </global>
     <frontend>
-        <routers>
-            <helloworld>
-                <use>standard</use>
-                <args>
-                    <module>Vavilen84_PostAccountCreate</module>
-                    <frontName>helloworld</frontName>
-                </args>
-            </helloworld>
-        </routers>
         <layout>
             <updates>
                 <vavilen84_postaccountcreate>
