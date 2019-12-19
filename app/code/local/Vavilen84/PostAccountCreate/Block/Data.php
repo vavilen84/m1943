@@ -59,9 +59,7 @@ class Vavilen84_PostAccountCreate_Block_Data extends Mage_Core_Block_Template
 
                 // login customer
                 $session = Mage::getSingleton('customer/session');
-                $session
-                    ->loginById($customerId)
-                    ->setCustomerAsLoggedIn($customer);
+                $session->loginById($customerId);
 
             } catch (Exception $e) {
                 Mage::logException($e);
