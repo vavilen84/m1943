@@ -1,0 +1,16 @@
+<div class="page-title">
+    <h1><?php echo $this->__('Hello World'); ?></h1>
+</div>
+<div class="content">
+<?php if ($this->isEnabled()) : ?>
+    <p><?php echo $this->__('Welcome tho the Hello World module. This is a simple module to understand the basics of a Magento 1.x module'); ?></p>
+    <?php if ($this->getMessage()) : ?>
+    <p><?php echo $this->__('Custom message:') . ' <strong>' . $this->getMessage() . '</strong>'; ?></p>
+    <?php else : ?>
+    <p><?php echo $this->__('Default message:') . ' <strong>' . $this->getMessage() . '</strong>'; ?></p>
+    <?php endif; ?>
+    </p>
+    <?php else : ?>
+    <p><?php echo $this->__('This module is not enabled'); ?></p>
+<?php endif; ?>
+</div>

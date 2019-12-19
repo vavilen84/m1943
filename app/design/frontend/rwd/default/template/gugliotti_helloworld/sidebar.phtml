@@ -1,0 +1,10 @@
+<?php if (Mage::helper('gugliotti_helloworld')->isEnabled()) : ?>
+<div class="block">
+    <div class="block-title">
+        <strong><?php echo $this->__('Hello World'); ?></strong>
+    </div>
+    <div class="block-content">
+        <p><a href="<?php echo $this->getUrl('helloworld'); ?>" title="<?php echo $this->__('Hello World'); ?>"><?php echo $this->__('Click here to say hello to the world...'); ?></a></p>
+    </div>
+</div>
+<?php endif; ?>

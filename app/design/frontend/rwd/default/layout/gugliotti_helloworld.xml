@@ -1,0 +1,27 @@
+<?xml version="1.0" ?>
+<layout>
+    <default>
+        <reference name="left">
+            <block type="gugliotti_helloworld/helloworld" name="hello.world.sidebar" template="gugliotti_helloworld/sidebar.phtml" />
+        </reference>
+        <reference name="footer">
+            <block type="core/template" name="hello.world.footer" as="HelloWorldFooter" template="gugliotti_helloworld/footer-block.phtml" />
+        </reference>
+    </default>
+    <helloworld_index_index>
+        <reference name="root">
+            <action method="setTemplate">
+                <template>page/2columns-left.phtml</template>
+            </action>
+        </reference>
+        <reference name="head">
+            <action method="setTitle" translate="title" module="gugliotti_helloworld"><title>Welcome to the Hello World</title></action>
+        </reference>
+        <reference name="left">
+            <remove name="hello.world.sidebar" />
+        </reference>
+        <reference name="content">
+            <block type="gugliotti_helloworld/helloworld" name="hello.world.content" template="gugliotti_helloworld/content.phtml" />
+        </reference>
+    </helloworld_index_index>
+</layout>

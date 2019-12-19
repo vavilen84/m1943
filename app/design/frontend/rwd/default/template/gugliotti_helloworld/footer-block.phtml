@@ -1,0 +1,12 @@
+<?php if (Mage::helper('gugliotti_helloworld')->isEnabled()) : ?>
+<div class="links">
+    <div class="block-title">
+        <strong>
+            <span><?php echo $this->__('Hello World'); ?></span>
+        </strong>
+    </div>
+    <div>
+        <p><?php echo Mage::helper('gugliotti_helloworld')->getConfig('configuration/message'); ?></p>
+    </div>
+</div>
+<?php endif; ?>
