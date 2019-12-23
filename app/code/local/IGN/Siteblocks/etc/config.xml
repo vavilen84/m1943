@@ -6,6 +6,11 @@
         </IGN_Siteblocks>
     </modules>
     <global>
+        <blocks>
+            <siteblocks>
+                <class>IGN_Siteblocks_Block</class>
+            </siteblocks>
+        </blocks>
         <models>
             <siteblocks>
                 <class>IGN_Siteblocks_Model</class>
@@ -51,11 +56,11 @@
             </modules>
         </translate>
         <layout>
-            <update>
+            <updates>
                 <siteblocks module="siteblocks">
                     <file>siteblocks.xml</file>
                 </siteblocks>
-            </update>
+            </updates>
         </layout>
     </frontend>
     <admin>

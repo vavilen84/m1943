@@ -5,7 +5,7 @@
 <!--            <action method="addJs"><script>custom.js</script></action>-->
 <!--        </reference>-->
         <reference name="content">
-            <block type="siteblocks/list" name="siteblocks.list" template="siteblocks/list.phtml"></block>
+            <block type="siteblocks/list" name="siteblocks.list" template="siteblocks/list.phtml"/>
         </reference>
     </siteblocks_index_index>
 </layout>
