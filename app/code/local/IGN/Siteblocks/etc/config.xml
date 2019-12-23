@@ -63,6 +63,11 @@
         </routers>
     </admin>
     <default>
-
+<!--        <siteblocks>-->
+<!--            <settings>-->
+<!--                <is_enabled>1</is_enabled>-->
+<!--                <blocks_count>3</blocks_count>-->
+<!--            </settings>-->
+<!--        </siteblocks>-->
     </default>
 </config>
