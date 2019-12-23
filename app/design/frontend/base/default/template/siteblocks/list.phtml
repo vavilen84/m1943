@@ -7,3 +7,5 @@ test
         <div class="block-content"><?php echo $block->getContent(); ?></div>
     </div>
 <?php endforeach; ?>
+
+<?php echo $this->getLayout()->createBlock('siteblocks/list')->setTemplate('siteblocks/list1.phtml')->toHtml();
