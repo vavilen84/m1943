@@ -50,6 +50,13 @@
                 </IGN_Siteblocks>
             </modules>
         </translate>
+        <layout>
+            <update>
+                <siteblocks module="siteblocks">
+                    <file>siteblocks.xml</file>
+                </siteblocks>
+            </update>
+        </layout>
     </frontend>
     <admin>
         <routers>
