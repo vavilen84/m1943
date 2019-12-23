@@ -1,2 +1,13 @@
 test
-<?php echo $this->count;
+<?php echo $this->count; ?>
+
+<?php
+var_dump($this->getBlocks());
+?>
+
+<?php //foreach ($this->getBlocks() as $block): ?>
+<!--    <div class="siteblock">-->
+<!--        <div class="block-title">--><?php //echo $block->getTitle(); ?><!--</div>-->
+<!--        <div class="block-content">--><?php //echo $block->getContent(); ?><!--</div>-->
+<!--    </div>-->
+<?php //endforeach; ?>

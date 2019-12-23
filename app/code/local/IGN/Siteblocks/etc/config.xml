@@ -17,7 +17,7 @@
                 <resourceModel>siteblocks_resource</resourceModel>
             </siteblocks>
             <siteblocks_resource>
-                <class>IGN_Siteblocks_Resource</class>
+                <class>IGN_Siteblocks_Model_Resource</class>
                 <entities>
                     <block>
                         <table>ign_siteblock</table>
