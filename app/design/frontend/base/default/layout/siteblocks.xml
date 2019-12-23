@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <layout version="1.0.0">
     <siteblocks_index_index>
-<!--        <reference name="head">-->
-<!--            <action method="addJs"><script>custom.js</script></action>-->
-<!--        </reference>-->
+        <reference name="head">
+            <action method="addJs"><script>custom.js</script></action>
+        </reference>
         <reference name="content">
             <block type="siteblocks/list" name="siteblocks.list" template="siteblocks/list.phtml"/>
         </reference>
