@@ -19,8 +19,26 @@
                             </config>
                         </children>
                     </system>
+                    <cms>
+                        <children>
+                            <siteblocks module="siteblocks">
+                                <title>Siteblocks</title>
+                            </siteblocks>
+                        </children>
+                    </cms>
                 </children>
             </admin>
         </resources>
     </acl>
+    <menu>
+        <cms>
+            <children>
+                <siteblocks module="siteblocks">
+                    <title>Siteblocks</title>
+                    <action>adminhtml/siteblocks</action>
+                    <sort_order>0</sort_order>
+                </siteblocks>
+            </children>
+        </cms>
+    </menu>
 </config>

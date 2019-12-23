@@ -73,6 +73,13 @@
                 </args>
             </adminhtml>
         </routers>
+        <layout>
+            <updates>
+                <siteblocks module="siteblocks">
+                    <file>siteblocks.xml</file>
+                </siteblocks>
+            </updates>
+        </layout>
     </admin>
     <default>
 <!--        <siteblocks>-->
