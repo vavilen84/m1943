@@ -20,7 +20,7 @@
                 <class>IGN_Siteblocks_Model_Resource</class>
                 <entities>
                     <block>
-                        <table>ign_siteblock</table>
+                        <table>ign_siteblocks</table>
                     </block>
                 </entities>
             </siteblocks_resource>
