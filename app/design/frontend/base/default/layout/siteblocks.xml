@@ -8,4 +8,9 @@
             <block type="siteblocks/list" name="siteblocks.list" template="siteblocks/list.phtml"/>
         </reference>
     </siteblocks_index_index>
+    <catalogsearch_result_index>
+        <reference name="left">
+            <block name="siteblocks.list" as="siteblocks" type="siteblocks/list" template="siteblocks/list.phtml"/>
+        </reference>
+    </catalogsearch_result_index>
 </layout>
