@@ -75,9 +75,9 @@
         </routers>
         <layout>
             <updates>
-                <siteblocks module="siteblocks">
+                <siteblocksgrid module="siteblocks">
                     <file>siteblocks.xml</file>
-                </siteblocks>
+                </siteblocksgrid>
             </updates>
         </layout>
     </admin>

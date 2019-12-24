@@ -4,6 +4,7 @@ class IGN_Siteblocks_Block_Adminhtml_Siteblocks extends Mage_Adminhtml_Block_Wid
 {
     public function __construct()
     {
+        echo 123;die;
         $this->_controller = 'adminhtml_siteblocks';
         $this->_blockGroup = 'siteblocks';
         $this->_headerText = Mage::helper('siteblocks')->__('Siteblocks');

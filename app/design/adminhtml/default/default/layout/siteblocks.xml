@@ -27,9 +27,9 @@
 -->
 
 <layout>
-    <adminhtml_siteblocks_index_index>
+    <adminhtml_siteblocks_index>
         <reference name="content">
-            <block type="adminhtml/siteblocks" name="siteblocks"/>
+            <block type="siteblocks/adminhtml_siteblocks"/>
         </reference>
-    </adminhtml_siteblocks_index_index>
+    </adminhtml_siteblocks_index>
 </layout>
