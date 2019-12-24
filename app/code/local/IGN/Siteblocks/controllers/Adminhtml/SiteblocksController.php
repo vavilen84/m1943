@@ -3,6 +3,8 @@ class IGN_Siteblocks_Adminhtml_SiteblocksController extends Mage_Adminhtml_Contr
 {
     public function indexAction()
     {
-        $this->loadLayout()->renderLayout();
+        $this->loadLayout();
+        $this->_addContent($this->getLayout()->createBlock('siteblocks/adminhtml_siteblocks'));
+        $this->renderLayout();
     }
 }

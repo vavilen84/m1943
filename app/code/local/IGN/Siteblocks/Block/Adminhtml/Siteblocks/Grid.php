@@ -15,7 +15,6 @@ class IGN_Siteblocks_Block_Adminhtml_Siteblocks_Grid extends Mage_Adminhtml_Bloc
     {
         $collection = Mage::getModel('siteblocks/block')->getCollection();
         /* @var $collection Mage_Cms_Model_Mysql4_Page_Collection */
-        $collection->setFirstStoreFlag(true);
         $this->setCollection($collection);
 
         return parent::_prepareCollection();

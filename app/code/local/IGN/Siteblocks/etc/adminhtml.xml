@@ -31,7 +31,7 @@
         </resources>
     </acl>
     <menu>
-        <cms>
+        <cms  module="siteblocks">
             <children>
                 <siteblocks module="siteblocks">
                     <title>Siteblocks</title>
